@@ -1,0 +1,38 @@
+class Solution {
+public:
+    double maxProbability(int n, vector<vector<int>>& edges, vector<double>& succProb, int start_node, int end_node) {
+        vector<double> prob(n, 0.0);
+        prob[start_node] = 1.0;  // Initialize the start node with probability 1.0
+        
+        // Bellman-Ford Algorithm
+        for (int i = 0; i < n - 1; ++i) {
+            bool isChanged = false;
+
+             // Iterate through each edge
+            for (int j = 0; j < edges.size(); ++j) {
+                int u = edges[j][0];  // First node of the edge
+                int v = edges[j][1];  // Second node of the edge
+                double sp = succProb[j];  // Success probability of this edge
+
+                // Check if we can update the probability of reaching node v
+                if (prob[u] * sp > prob[v]) {
+                    prob[v] = prob[u] * sp;
+                    isChanged = true;
+                }
+
+               // Check if we can update the probability of reaching node u
+                if (prob[v] * sp > prob[u]) {
+                    prob[u] = prob[v] * sp;
+                    isChanged = true;
+                }
+            }
+
+             // If no update was made in this iteration, break early
+            if (!isChanged) {
+                break;
+            }
+        }
+
+        return prob[end_node];  // Return the max probability of reaching the end node
+    }
+};
