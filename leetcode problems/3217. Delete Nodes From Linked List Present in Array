@@ -1,0 +1,77 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+
+struct ListNode {
+    int val;
+    ListNode* next;
+    ListNode(int x) : val(x), next(nullptr) {}
+};
+
+class Solution {
+public:
+    ListNode* modifiedList(vector<int>& nums, ListNode* head) {
+        // Define a boolean array to track the elements in nums
+        vector<bool> set(1e5 + 1, false);
+
+        // Mark the elements in the set as true
+        for (int num : nums) {
+            set[num] = true;
+        }
+
+        ListNode* prev = nullptr;
+        ListNode* cur = head;
+
+        // Traverse the linked list
+        while (cur != nullptr) {
+            if (set[cur->val] == true) {
+                // Delete node at the head
+                if (prev == nullptr) {
+                    head = head->next;
+                    cur->next = nullptr;
+                    cur = head;
+                } else { 
+                    // Delete node in the middle or end
+                    prev->next = cur->next;
+                    cur->next = nullptr;
+                    cur = prev->next;
+                }
+            } else {
+                prev = cur;
+                cur = cur->next;
+            }
+        }
+
+        return head;        
+    }
+};
+
+// Function to print the linked list
+void printList(ListNode* head) {
+    while (head != nullptr) {
+        cout << head->val << " ";
+        head = head->next;
+    }
+    cout << endl;
+}
+
+int main() {
+    Solution sol;
+
+    // Example list: 1 -> 2 -> 3 -> 4 -> 5
+    ListNode* head = new ListNode(1);
+    head->next = new ListNode(2);
+    head->next->next = new ListNode(3);
+    head->next->next->next = new ListNode(4);
+    head->next->next->next->next = new ListNode(5);
+
+    vector<int> nums = {2, 4}; // Elements to remove from the linked list
+
+    // Modify the list and return the new head
+    head = sol.modifiedList(nums, head);
+
+    // Print the modified list
+    printList(head);
+
+    return 0;
+}
