@@ -1,0 +1,111 @@
+#include <iostream>
+using namespace std;
+
+// Definition for singly-linked list.
+class ListNode {
+public:
+    int val;
+    ListNode* next;
+    ListNode(int x) : val(x), next(nullptr) {}
+};
+
+// Definition for a binary tree node.
+class TreeNode {
+public:
+    int val;
+    TreeNode* left;
+    TreeNode* right;
+    TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+};
+
+class Solution {
+public:
+    // Helper function to perform DFS and check if the linked list matches the tree path
+    bool dfs(ListNode* head, TreeNode* node) {
+        if (head == nullptr) return true;
+        if (node == nullptr) return false;
+        if (head->val != node->val) return false;
+        return dfs(head->next, node->left) || dfs(head->next, node->right);
+    }
+
+    // Function to check if the linked list is a subpath in the binary tree
+    bool isSubPath(ListNode* head, TreeNode* root) {
+        if (root == nullptr) return false;
+        if (root->val == head->val && dfs(head, root)) {
+            return true;
+        }
+        return isSubPath(head, root->left) || isSubPath(head, root->right);
+    }
+};
+
+// Function to create a linked list from an array of values
+ListNode* createLinkedList(const vector<int>& values) {
+    if (values.empty()) return nullptr;
+    ListNode* head = new ListNode(values[0]);
+    ListNode* current = head;
+    for (size_t i = 1; i < values.size(); ++i) {
+        current->next = new ListNode(values[i]);
+        current = current->next;
+    }
+    return head;
+}
+
+// Function to insert nodes in the binary tree (for simplicity, a sample manual tree is created)
+TreeNode* createSampleTree() {
+    TreeNode* root = new TreeNode(1);
+    root->left = new TreeNode(4);
+    root->right = new TreeNode(4);
+    root->left->right = new TreeNode(2);
+    root->left->right->left = new TreeNode(1);
+    root->right->left = new TreeNode(2);
+    root->right->left->left = new TreeNode(6);
+    root->right->left->right = new TreeNode(8);
+    root->right->left->right->left = new TreeNode(1);
+    root->right->left->right->right = new TreeNode(3);
+    return root;
+}
+
+// Function to delete the linked list and free memory
+void deleteLinkedList(ListNode* head) {
+    while (head) {
+        ListNode* temp = head;
+        head = head->next;
+        delete temp;
+    }
+}
+
+// Function to delete the binary tree and free memory
+void deleteTree(TreeNode* root) {
+    if (root == nullptr) return;
+    deleteTree(root->left);
+    deleteTree(root->right);
+    delete root;
+}
+
+// Main function to test the isSubPath functionality
+int main() {
+    Solution solution;
+
+    // Create a sample linked list
+    vector<int> listValues = {4, 2, 8};
+    ListNode* head = createLinkedList(listValues);
+
+    // Create a sample binary tree
+    TreeNode* root = createSampleTree();
+
+    // Check if the linked list is a subpath in the binary tree
+    bool result = solution.isSubPath(head, root);
+
+    // Print the result
+    if (result) {
+        cout << "The linked list is a subpath of the binary tree." << endl;
+    } else {
+        cout << "The linked list is NOT a subpath of the binary tree." << endl;
+    }
+
+    // Clean up the memory
+    deleteLinkedList(head);
+    deleteTree(root);
+
+    return 0;
+}
