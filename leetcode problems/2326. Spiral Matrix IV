@@ -1,0 +1,56 @@
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+
+class Solution {
+public:
+    vector<vector<int>> spiralMatrix(int m, int n, ListNode* head) {
+        // Initialize the matrix with -1 as required
+        vector<vector<int>> matrix(m, vector<int>(n, -1));
+        
+        // Define boundaries for the spiral traversal
+        int topRow = 0, bottomRow = m - 1;
+        int leftColumn = 0, rightColumn = n - 1;
+
+        // Traverse the matrix in a spiral manner, filling in the values from the linked list
+        while (head) {
+            // Fill the top row from left to right
+            for (int col = leftColumn; col <= rightColumn && head; ++col) {
+                matrix[topRow][col] = head->val;
+                head = head->next;
+            }
+            topRow++;  // Move the top boundary down
+            
+            // Fill the right column from top to bottom
+            for (int row = topRow; row <= bottomRow && head; ++row) {
+                matrix[row][rightColumn] = head->val;
+                head = head->next;
+            }
+            rightColumn--;  // Move the right boundary left
+            
+            // Fill the bottom row from right to left
+            for (int col = rightColumn; col >= leftColumn && head; --col) {
+                matrix[bottomRow][col] = head->val;
+                head = head->next;
+            }
+            bottomRow--;  // Move the bottom boundary up
+            
+            // Fill the left column from bottom to top
+            for (int row = bottomRow; row >= topRow && head; --row) {
+                matrix[row][leftColumn] = head->val;
+                head = head->next;
+            }
+            leftColumn++;  // Move the left boundary right
+        }
+        
+        // Return the spiral filled matrix
+        return matrix;
+    }
+};
