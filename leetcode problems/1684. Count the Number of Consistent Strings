@@ -1,0 +1,50 @@
+#include <iostream>
+#include <unordered_set>
+#include <vector>
+#include <string>
+
+using namespace std;
+
+class Solution {
+public:
+    int countConsistentStrings(string allowed, vector<string>& words) {
+        int counter = 0;
+        unordered_set<char> allowedSet;
+
+        // Insert allowed characters into a set
+        for (char ch : allowed) {
+            allowedSet.insert(ch);
+        }
+
+        // Check each word
+        for (const string& word : words) {
+            bool isConsistent = true;
+            
+            // Check if all characters of the word are in the allowed set
+            for (char ch : word) {
+                if (allowedSet.find(ch) == allowedSet.end()) {
+                    isConsistent = false;
+                    break;
+                }
+            }
+            
+            // If the word is consistent, increment the counter
+            if (isConsistent) {
+                counter++;
+            }
+        }
+        
+        return counter;
+    }
+};
+
+int main() {
+    Solution solution;
+    string allowed = "ab";
+    vector<string> words = {"ad", "bd", "aaab", "baa", "badab"};
+    
+    int result = solution.countConsistentStrings(allowed, words);
+    cout << "Number of consistent strings: " << result << endl;
+
+    return 0;
+}
