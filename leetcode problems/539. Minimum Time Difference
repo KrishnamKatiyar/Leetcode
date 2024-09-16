@@ -1,0 +1,44 @@
+class Solution {
+public:
+    int findMinDifference(std::vector<std::string>& timePoints) {
+        // Array to mark minutes in a day
+        bool mins[1440] = {false};
+
+        // Mark the minutes from the input time points
+        for (const std::string& time : timePoints) {
+            int h = std::stoi(time.substr(0, 2));
+            int m = std::stoi(time.substr(3, 2));
+            int minutes = h * 60 + m;
+
+            // If this minute is already marked, return 0
+            if (mins[minutes]) return 0;
+            mins[minutes] = true;
+        }
+
+        int prev = -1;
+        int firstVal = -1;
+        int minDiff = INT_MAX;
+
+        // Traverse through all minutes of the day
+        for (int cur = 0; cur < 1440; ++cur) {
+            if (mins[cur]) {
+                if (prev == -1) {
+                    // First marked minute
+                    firstVal = cur;
+                    prev = cur;
+                } else {
+                    // Find the minimum difference
+                    minDiff = std::min(minDiff, cur - prev);
+                    prev = cur;
+                }
+            }
+        }
+
+        // Check the difference between the last and the first marked minute
+        if (prev != -1) {
+            minDiff = std::min(minDiff, 1440 + firstVal - prev);
+        }
+
+        return minDiff;
+    }
+};
