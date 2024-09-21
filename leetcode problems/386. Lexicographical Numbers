@@ -1,0 +1,47 @@
+//DFS 
+class Solution {
+public:
+    vector<int> lexicalOrder(int n) {
+        vector<int> res;
+        for (int i = 1; i < 10; i++) {
+            if (i > n) break;
+            dfs(i, n, res);
+        }
+        return res;
+    }
+
+    void dfs(int curNum, int target, vector<int>& res) {
+        if (curNum > target) return;
+        
+        res.push_back(curNum);
+        for (int d = 0; d < 10; d++) {
+            if (curNum * 10 + d > target) break;
+            dfs(curNum * 10 + d, target, res);
+        }
+    }
+};
+
+
+
+//Iterative
+class Solution {
+public:
+    vector<int> lexicalOrder(int n) {
+        vector<int> res;
+        int curNum = 1;
+        
+        for (int i = 1; i <= n; i++) {
+            res.push_back(curNum);
+            if (curNum * 10 <= n) {
+                curNum *= 10;
+            } else {
+                while (curNum % 10 == 9 || curNum == n) {
+                    curNum /= 10;
+                }
+                curNum++;
+            }
+        }
+        
+        return res;
+    }
+};
