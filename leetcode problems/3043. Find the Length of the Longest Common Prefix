@@ -1,0 +1,86 @@
+#include <iostream>
+#include <vector>
+#include <string>
+using namespace std;
+
+class Node {
+public:
+    Node* child[10]; // Array of pointers to children (0 to 9 digits)
+    Node() {
+        for (int i = 0; i < 10; i++) {
+            child[i] = nullptr;
+        }
+    }
+};
+
+class Trie {
+public:
+    Node* root;
+    
+    Trie() {
+        root = new Node();
+    }
+
+    void addWord(const string& word) { // Add a word to the Trie
+        Node* temp = root;
+        for (char ch : word) { // Iterate over each character in the word
+            int index = ch - '0'; // Convert character '0' to '9' into integer 0 to 9
+            // If child for the character is not present, create it
+            if (temp->child[index] == nullptr) {
+                temp->child[index] = new Node();
+            }
+            // Move to the next node
+            temp = temp->child[index];
+        }
+    }
+
+    // Finds and returns the length of the longest common prefix for the given word
+    int findPrefix(const string& word) {
+        Node* temp = root;
+        int len = 0;
+        for (int i = 0; i < word.length(); i++) {
+            char ch = word[i];
+            int index = ch - '0';
+            // If child is not present, the prefix cannot be found
+            if (temp->child[index] == nullptr) {
+                break;
+            }
+            // Move to the next node
+            temp = temp->child[index];
+            len++;
+        }
+        return len;
+    }
+};
+
+class Solution {
+public:
+    // Function to find the length of the longest common prefix between two arrays
+    int longestCommonPrefix(const vector<int>& arr1, const vector<int>& arr2) {
+        Trie trie;
+        int maxLen = INT_MIN; // Initialize maxLen to the smallest possible integer value
+        
+        // Add all elements of arr1 to the Trie
+        for (int num : arr1) {
+            trie.addWord(to_string(num));
+        }
+        
+        // For each element in arr2, find the common prefix and update maxLen
+        for (int num : arr2) {
+            int len = trie.findPrefix(to_string(num));
+            maxLen = max(maxLen, len);
+        }
+        return maxLen;
+    }
+};
+
+int main() {
+    Solution solution;
+    vector<int> arr1 = {123, 456, 789};
+    vector<int> arr2 = {1234, 567, 123};
+    
+    int result = solution.longestCommonPrefix(arr1, arr2);
+    cout << "Longest Common Prefix Length: " << result << endl;
+    
+    return 0;
+}
