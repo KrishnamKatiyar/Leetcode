@@ -1,0 +1,86 @@
+#include <iostream>
+#include <vector>
+#include <string>
+using namespace std;
+
+class Node {
+public:
+    Node* child[26]; // Array of pointers for children ('a' to 'z')
+    int count;       // Count to store how many words pass through this node
+
+    Node() {
+        for (int i = 0; i < 26; i++) {
+            child[i] = nullptr;
+        }
+        count = 0;
+    }
+};
+
+class Trie {
+public:
+    Node* root;
+
+    Trie() {
+        root = new Node();
+    }
+
+    // Add a word to the Trie
+    void addWord(const string& word) {
+        Node* temp = root;
+        for (char ch : word) {   // Iterate over each character in the word
+            int index = ch - 'a';  // Convert 'a' to 'z' into index 0 to 25
+            if (temp->child[index] == nullptr) {
+                temp->child[index] = new Node();  // Create a new node if not present
+            }
+            temp->child[index]->count++;  // Increment the count for this node
+            temp = temp->child[index];    // Move to the next child node
+        }
+    }
+
+    // Find the total score of all prefixes for a given word
+    int findPrefixCount(const string& word) {
+        Node* temp = root;
+        int count = 0;
+        for (char ch : word) {
+            int index = ch - 'a';
+            count += temp->child[index]->count;  // Add the count of the current prefix
+            temp = temp->child[index];  // Move to the next child node
+        }
+        return count;
+    }
+};
+
+class Solution {
+public:
+    vector<int> sumPrefixScores(const vector<string>& words) {
+        Trie trie;
+        vector<int> result(words.size(), 0);
+
+        // First, add all the words to the Trie
+        for (const string& word : words) {
+            trie.addWord(word);
+        }
+
+        // Calculate the prefix scores for each word
+        for (int i = 0; i < words.size(); i++) {
+            result[i] = trie.findPrefixCount(words[i]);
+        }
+
+        return result;
+    }
+};
+
+int main() {
+    Solution solution;
+    vector<string> words = {"abc", "ab", "bc", "b"};
+    
+    vector<int> result = solution.sumPrefixScores(words);
+    
+    // Print the results
+    for (int score : result) {
+        cout << score << " ";
+    }
+    cout << endl;
+
+    return 0;
+}
