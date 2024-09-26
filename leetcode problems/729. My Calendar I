@@ -1,0 +1,31 @@
+#include <map>
+
+class MyCalendar {
+    std::map<int, int> bookings;
+
+public:
+    MyCalendar() {}
+
+    bool book(int start, int end) {
+        // Find the nearest booking that ends before the new start time
+        auto it = bookings.lower_bound(end);
+        
+        // Check if there's a conflicting booking
+        if (it != bookings.begin()) {
+            auto prev = std::prev(it);
+            if (prev->second > start) {
+                return false; // There's a conflict
+            }
+        }
+
+        // If no conflict, insert the new booking
+        bookings[start] = end;
+        return true;
+    }
+};
+
+/**
+ * Your MyCalendar object will be instantiated and called as such:
+ * MyCalendar* obj = new MyCalendar();
+ * bool param_1 = obj->book(start, end);
+ */
