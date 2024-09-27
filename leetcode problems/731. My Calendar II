@@ -1,0 +1,87 @@
+//storing overlapped intervals
+
+#include <vector>
+#include <map>
+#include <algorithm>
+using namespace std;
+
+class MyCalendarTwo {
+    vector<pair<int, int>> bookings;
+    map<int, int> overlappedMap;
+    
+public:
+    MyCalendarTwo() {}
+    
+    bool book(int start, int end) {
+        // Check if the event is present in overlapped intervals
+        auto it = overlappedMap.lower_bound(end);
+        if (it != overlappedMap.begin()) {
+            --it;
+            if (start < it->second) {
+                return false;
+            }
+        }
+
+        // Insert into bookings and if it overlaps with any existing booking, add to overlapped map
+        for (const auto& booking : bookings) {
+            int commStart = max(booking.first, start);
+            int commEnd = min(booking.second, end);
+            if (commStart < commEnd) {
+                overlappedMap[commStart] = commEnd;
+            }
+        }
+
+        bookings.push_back({start, end});
+        return true;
+    }
+};
+
+/**
+ * Your MyCalendarTwo object will be instantiated and called as such:
+ * MyCalendarTwo obj;
+ * bool param_1 = obj.book(start, end);
+ */
+
+
+
+//sweep line algorithm
+
+#include <map>
+using namespace std;
+
+class MyCalendarTwo {
+    map<int, int> bookings;
+    int maxAllowed;
+
+public:
+    MyCalendarTwo() {
+        maxAllowed = 2;
+    }
+
+    bool book(int start, int end) {
+        bookings[start]++;
+        bookings[end]--;
+
+        int overlapCount = 0;
+
+        // Prefix sum of bookings to count the number of active events
+        for (const auto& entry : bookings) {
+            overlapCount += entry.second;
+            if (overlapCount > maxAllowed) {
+                bookings[start]--;
+                bookings[end]++;
+                if (bookings[start] == 0) bookings.erase(start);
+                if (bookings[end] == 0) bookings.erase(end);
+                return false;
+            }
+        }
+
+        return true;
+    }
+};
+
+/**
+ * Your MyCalendarTwo object will be instantiated and called as such:
+ * MyCalendarTwo obj;
+ * bool param_1 = obj.book(start, end);
+ */
