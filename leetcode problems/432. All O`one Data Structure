@@ -1,0 +1,118 @@
+#include <unordered_map>
+#include <unordered_set>
+#include <string>
+using namespace std;
+
+class Node {
+public:
+    Node* next;
+    Node* prev;
+    int freq;
+    unordered_set<string> keys;
+    
+    Node(int f) : freq(f), next(nullptr), prev(nullptr) {}
+};
+
+class AllOne {
+private:
+    unordered_map<string, Node*> map;
+    Node* head;
+    Node* tail;
+    
+    void removeNode(Node* cur) {
+        Node* prevNode = cur->prev;
+        Node* nextNode = cur->next;
+        prevNode->next = nextNode;
+        nextNode->prev = prevNode;
+        delete cur;
+    }
+    
+public:
+    AllOne() {
+        head = new Node(0);
+        tail = new Node(0);
+        head->next = tail;
+        tail->prev = head;
+    }
+    
+    ~AllOne() {
+        // Destructor to prevent memory leak
+        while (head) {
+            Node* nextNode = head->next;
+            delete head;
+            head = nextNode;
+        }
+    }
+    
+    void inc(string key) {
+        Node* cur = head;
+        int newFreq = 1;
+        if (map.find(key) != map.end()) {
+            cur = map[key];
+            newFreq = cur->freq + 1;
+            cur->keys.erase(key);
+        }
+        
+        if (cur->next->freq == newFreq) {
+            cur->next->keys.insert(key);
+        } else {
+            Node* node = new Node(newFreq);
+            node->keys.insert(key);
+            Node* nextNode = cur->next;
+            node->next = nextNode;
+            nextNode->prev = node;
+            cur->next = node;
+            node->prev = cur;
+        }
+        map[key] = cur->next;
+        
+        if (cur->keys.empty() && cur != head) {
+            removeNode(cur);
+        }
+    }
+    
+    void dec(string key) {
+        Node* cur = map[key];
+        int newFreq = cur->freq - 1;
+        cur->keys.erase(key);
+        
+        if (newFreq == 0) {
+            if (cur->keys.empty()) {
+                removeNode(cur);
+            }
+            map.erase(key);
+            return;
+        }
+        
+        if (cur->prev->freq == newFreq) {
+            cur->prev->keys.insert(key);
+        } else {
+            Node* node = new Node(newFreq);
+            node->keys.insert(key);
+            Node* prevNode = cur->prev;
+            node->prev = prevNode;
+            prevNode->next = node;
+            node->next = cur;
+            cur->prev = node;
+        }
+        map[key] = cur->prev;
+        
+        if (cur->keys.empty() && cur != head) {
+            removeNode(cur);
+        }
+    }
+    
+    string getMaxKey() {
+        if (tail->prev == head) {
+            return "";
+        }
+        return *(tail->prev->keys.begin());
+    }
+    
+    string getMinKey() {
+        if (head->next == tail) {
+            return "";
+        }
+        return *(head->next->keys.begin());
+    }
+};
