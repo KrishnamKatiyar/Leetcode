@@ -1,0 +1,91 @@
+Two Map Comparison Approach
+
+class Solution {
+public:
+    bool checkInclusion(string s1, string s2) {
+        int n = s1.length();
+        int m = s2.length();
+        if (m < n) return false;
+
+        vector<int> map1(26, 0);
+        vector<int> map2(26, 0);
+
+        // Build frequency map for s1
+        for (int i = 0; i < n; i++) {
+            map1[s1[i] - 'a']++;
+        }
+
+        // Sliding window on s2
+        for (int i = 0; i <= m - n; i++) {
+            // Build frequency map for the current window in s2
+            for (int j = 0; j < n; j++) {
+                map2[s2[i + j] - 'a']++;
+            }
+
+            // Check if both maps match
+            if (isMatched(map1, map2)) {
+                return true;
+            }
+
+            // Reset map2 for the next iteration
+            fill(map2.begin(), map2.end(), 0);
+        }
+
+        return false;
+    }
+
+private:
+    bool isMatched(const vector<int>& map1, const vector<int>& map2) {
+        for (int i = 0; i < 26; i++) {
+            if (map1[i] != map2[i]) return false;
+        }
+        return true;
+    }
+};
+
+
+
+Sliding Window Approach
+
+class Solution {
+public:
+    bool checkInclusion(string s1, string s2) {
+        int n = s1.length();
+        int m = s2.length();
+        if (m < n) return false;
+
+        vector<int> map1(26, 0);
+        vector<int> map2(26, 0);
+
+        // Build initial frequency maps for s1 and the first window in s2
+        for (int i = 0; i < n; i++) {
+            map1[s1[i] - 'a']++;
+            map2[s2[i] - 'a']++;
+        }
+
+        // Check the first window
+        if (isMatched(map1, map2)) {
+            return true;
+        }
+
+        // Sliding window logic for s2
+        for (int i = 1; i <= m - n; i++) {
+            map2[s2[i - 1] - 'a']--;       // Remove the character going out of the window
+            map2[s2[i + n - 1] - 'a']++;   // Add the character coming into the window
+
+            if (isMatched(map1, map2)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+private:
+    bool isMatched(const vector<int>& map1, const vector<int>& map2) {
+        for (int i = 0; i < 26; i++) {
+            if (map1[i] != map2[i]) return false;
+        }
+        return true;
+    }
+};
