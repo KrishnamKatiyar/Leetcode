@@ -1,0 +1,24 @@
+class Solution {
+public:
+    vector<vector<int>> divideArray(vector<int>& nums, int k) {
+        int n=nums.size();
+        vector<vector<int>>ans;
+
+        sort(begin(nums),end(nums));
+
+        for(int i=0;i<n;i+=3){
+            int minVal=nums[i],maxVal=nums[i];
+            vector<int>temp;
+
+            for(int j=i;j<i+3;j++){
+                minVal=min(minVal,nums[j]);
+                maxVal=max(maxVal,nums[j]);
+                temp.push_back(nums[j]);
+            }
+            
+            if(abs(minVal-maxVal)>k) return {};
+            ans.push_back(temp);
+        }
+        return ans;
+    }
+};
